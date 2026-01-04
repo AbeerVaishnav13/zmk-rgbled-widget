@@ -36,6 +36,12 @@ BUILD_ASSERT(DT_NODE_EXISTS(DT_ALIAS(led_green)),
              "An alias for a green LED is not found for RGBLED_WIDGET");
 BUILD_ASSERT(DT_NODE_EXISTS(DT_ALIAS(led_blue)),
              "An alias for a blue LED is not found for RGBLED_WIDGET");
+BUILD_ASSERT(DT_NODE_EXISTS(DT_ALIAS(led_red_pcb)),
+             "An alias for a red PCB LED is not found for RGBLED_WIDGET");
+BUILD_ASSERT(DT_NODE_EXISTS(DT_ALIAS(led_green_pcb)),
+             "An alias for a green PCB LED is not found for RGBLED_WIDGET");
+BUILD_ASSERT(DT_NODE_EXISTS(DT_ALIAS(led_blue_pcb)),
+             "An alias for a blue PCB LED is not found for RGBLED_WIDGET");
 
 BUILD_ASSERT(!(SHOW_LAYER_CHANGE && SHOW_LAYER_COLORS),
              "CONFIG_RGBLED_WIDGET_SHOW_LAYER_CHANGE and CONFIG_RGBLED_WIDGET_SHOW_LAYER_COLORS "
@@ -43,9 +49,18 @@ BUILD_ASSERT(!(SHOW_LAYER_CHANGE && SHOW_LAYER_COLORS),
 
 // GPIO-based LED device and indices of red/green/blue LEDs inside its DT node
 static const struct device *led_dev = DEVICE_DT_GET(LED_GPIO_NODE_ID);
-static const uint8_t rgb_idx[] = {DT_NODE_CHILD_IDX(DT_ALIAS(led_red)),
-                                  DT_NODE_CHILD_IDX(DT_ALIAS(led_green)),
-                                  DT_NODE_CHILD_IDX(DT_ALIAS(led_blue))};
+static const uint8_t rgb_idx[][] = {
+                                        {
+                                            DT_NODE_CHILD_IDX(DT_ALIAS(led_red)),
+                                            DT_NODE_CHILD_IDX(DT_ALIAS(led_green)),
+                                            DT_NODE_CHILD_IDX(DT_ALIAS(led_blue))
+                                        },
+                                        {
+                                            DT_NODE_CHILD_IDX(DT_ALIAS(led_red_pcb)),
+                                            DT_NODE_CHILD_IDX(DT_ALIAS(led_green_pcb)),
+                                            DT_NODE_CHILD_IDX(DT_ALIAS(led_blue_pcb))
+                                        }
+                                    };
 
 // map from color values to names, for logging
 static const char *color_names[] = {"black", "red",     "green", "yellow",
@@ -103,9 +118,11 @@ static void set_rgb_leds(uint8_t color, uint16_t duration_ms) {
         if ((bit & led_current_color) != (bit & color)) {
             // bits are different, so we need to change one
             if (bit & color) {
-                led_on(led_dev, rgb_idx[pos]);
+                led_on(led_dev, rgb_idx[0][pos]);
+                led_on(led_dev, rgb_idx[1][pos]);
             } else {
-                led_off(led_dev, rgb_idx[pos]);
+                led_off(led_dev, rgb_idx[0][pos]);
+                led_off(led_dev, rgb_idx[1][pos]);
             }
         }
     }

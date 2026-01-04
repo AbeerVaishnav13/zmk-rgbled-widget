@@ -49,7 +49,7 @@ BUILD_ASSERT(!(SHOW_LAYER_CHANGE && SHOW_LAYER_COLORS),
 
 // GPIO-based LED device and indices of red/green/blue LEDs inside its DT node
 static const struct device *led_dev = DEVICE_DT_GET(LED_GPIO_NODE_ID);
-static const uint8_t rgb_idx[][] = {
+static const uint8_t rgb_idx[2][] = {
                                         {
                                             DT_NODE_CHILD_IDX(DT_ALIAS(led_red)),
                                             DT_NODE_CHILD_IDX(DT_ALIAS(led_green)),
